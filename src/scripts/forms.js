@@ -44,7 +44,12 @@ async function mountTurnstile(form, feedback) {
   const container = document.createElement("div");
   container.className = "turnstile-widget";
   container.setAttribute("aria-label", "Verificación de seguridad");
-  form.appendChild(container);
+  const submitControl = form.querySelector('button[type="submit"], input[type="submit"]');
+  if (submitControl) {
+    submitControl.before(container);
+  } else {
+    form.appendChild(container);
+  }
 
   const tokenField = document.createElement("input");
   tokenField.type = "hidden";
