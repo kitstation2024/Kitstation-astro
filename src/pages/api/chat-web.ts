@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { consumeRateLimit } from "../../lib/rate-limit";
 
 export const prerender = false;
 
@@ -10,6 +11,7 @@ const JSON_HEADERS = {
 const MODEL = "gpt-4o-mini";
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
 const MAX_HISTORY_MESSAGES = 10;
+const CHAT_LIMIT = { limit: 30, windowSeconds: 600 };
 
 const SYSTEM_PROMPT = `
 Eres el asistente comercial de Kitstation.
@@ -35,6 +37,11 @@ function jsonResponse(status: number, payload: Record<string, unknown>) {
 function getApiKey() {
   const value = import.meta.env.OPENAI_API_KEY;
   return typeof value === "string" ? value.trim() : "";
+}
+
+function getClientIp(request: Request) {
+  const forwarded = request.headers.get("x-vercel-forwarded-for") || request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for");
+  return forwarded?.split(",")[0]?.trim() || "unknown";
 }
 
 type ChatMessage = {
@@ -64,6 +71,17 @@ function sanitizeHistory(value: unknown): ChatMessage[] {
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    const rate = await consumeRateLimit({ namespace: "chat", identifier: getClientIp(request), ...CHAT_LIMIT });
+    if (rate.unavailable) {
+      return jsonResponse(503, { success: false, message: "El servicio de seguridad no está disponible." });
+    }
+    if (!rate.allowed) {
+      return new Response(JSON.stringify({ success: false, message: "Demasiados mensajes. Inténtalo más tarde." }), {
+        status: 429,
+        headers: { ...JSON_HEADERS, "Retry-After": String(rate.retryAfterSeconds) }
+      });
+    }
+
     const apiKey = getApiKey();
     if (!apiKey) {
       return jsonResponse(500, {
@@ -76,10 +94,10 @@ export const POST: APIRoute = async ({ request }) => {
     const message = typeof body?.message === "string" ? body.message.trim() : "";
     const history = sanitizeHistory(body?.history);
 
-    if (!message) {
+    if (!message || message.length > 700) {
       return jsonResponse(400, {
         success: false,
-        message: "Debes enviar un mensaje."
+        message: "Debes enviar un mensaje de hasta 700 caracteres."
       });
     }
 

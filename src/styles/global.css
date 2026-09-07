@@ -115,61 +115,10 @@ select {
   color: #c42d2d;
 }
 
-.grecaptcha-badge {
-  visibility: hidden !important;
-}
-
-.recaptcha-disclosure {
-  position: fixed;
-  left: 0;
-  bottom: 14px;
-  z-index: 54;
-  display: inline-flex;
-  align-items: center;
-  height: 60px;
-  overflow: hidden;
-  border-radius: 3px;
-  background: #1a73e8;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-  font-family: Arial, Helvetica, sans-serif;
-  transform: translateX(calc(-100% + 70px));
-  transition:
-    transform 0.28s ease;
-}
-
-.recaptcha-disclosure:hover,
-.recaptcha-disclosure:focus-within {
-  transform: translateX(0);
-}
-
-.recaptcha-disclosure__icon {
+.turnstile-widget {
   display: flex;
-  align-items: center;
   justify-content: center;
-  width: 70px;
-  height: 100%;
-  background: #ffffff;
-}
-
-.recaptcha-disclosure__icon img {
-  width: 42px;
-  height: 42px;
-}
-
-.recaptcha-disclosure__content {
-  padding: 0 15px;
-}
-
-.recaptcha-disclosure__content strong {
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.recaptcha-disclosure__content strong span {
-  font-weight: 300;
+  margin-top: 0.875rem;
 }
 
 .cookie-banner {

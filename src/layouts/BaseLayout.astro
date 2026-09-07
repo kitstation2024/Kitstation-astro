@@ -46,6 +46,8 @@ const structuredDataItems = Array.isArray(structuredData)
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="preload" href="/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/poppins-600.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preconnect" href="https://challenges.cloudflare.com" />
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
 
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content="KitStation" />
@@ -67,14 +69,6 @@ const structuredDataItems = Array.isArray(structuredData)
   </head>
   <body>
     <slot />
-    <div class="recaptcha-disclosure" aria-label="Protección de reCAPTCHA">
-      <div class="recaptcha-disclosure__content">
-        <strong><span>protección de</span> reCAPTCHA</strong>
-      </div>
-      <div class="recaptcha-disclosure__icon" aria-hidden="true">
-        <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="" width="48" height="48" loading="lazy" />
-      </div>
-    </div>
     <section class="cookie-banner" data-cookie-banner aria-label="Aviso de cookies" hidden>
       <p>
         ¡Bienvenido a kitstation.pe! Para proporcionarte una mejor experiencia, utilizamos cookies para habilitar algunas funciones del sitio web. Las cookies nos ayudan a ver qué artículos pueden ser de mayor interés para usted; le permiten compartir fácilmente artículos en las redes sociales; nos permiten entregar contenido, trabajos y anuncios adaptados a sus intereses y ubicaciones; y proporcionar muchos otros beneficios del sitio. Para obtener más información, consulte nuestra <a href="/politicas-y-privacidad/">Política de Cookies y Política de Privacidad</a>.

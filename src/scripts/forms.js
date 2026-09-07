@@ -1,9 +1,6 @@
 const SUCCESS_MESSAGE = "Tu mensaje fue enviado correctamente. Te responderemos pronto.";
-const ERROR_MESSAGE =
-  "No se pudo enviar el formulario. Intentalo nuevamente o escribenos por WhatsApp.";
-const RECAPTCHA_ENABLED = false;
-const RECAPTCHA_SITE_KEY = "6LeOxWotAAAAAMu4G5IjcT3_inO9D1eq3o1Fkc1Y";
-const RECAPTCHA_ACTION = "mail_form";
+const ERROR_MESSAGE = "No se pudo enviar el formulario. Inténtalo nuevamente o escríbenos por WhatsApp.";
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || "";
 
 function setOrigin(form) {
   form.querySelectorAll('input[name="pagina_origen"], input[name="página_origen"]').forEach((origin) => {
@@ -19,36 +16,70 @@ function setFeedback(feedback, state, message) {
 
 function setButtonState(button, sending) {
   if (!button) return;
-
   if (sending) {
     button.dataset.originalText = button.textContent;
     button.textContent = "Enviando...";
     button.disabled = true;
     return;
   }
-
   button.textContent = button.dataset.originalText || button.textContent;
   button.disabled = false;
 }
 
-function getRecaptchaApi() {
-  return window.grecaptcha?.enterprise || window.grecaptcha;
-}
-
-function waitForRecaptcha() {
-  const recaptcha = getRecaptchaApi();
-  if (!recaptcha?.ready) {
-    return Promise.reject(new Error("reCAPTCHA no esta disponible."));
-  }
-
-  return new Promise((resolve) => {
-    recaptcha.ready(() => resolve(recaptcha));
+function waitForTurnstile() {
+  return new Promise((resolve, reject) => {
+    const deadline = Date.now() + 10000;
+    const check = () => {
+      if (window.turnstile?.render) return resolve(window.turnstile);
+      if (Date.now() >= deadline) return reject(new Error("No se pudo cargar la verificación de seguridad."));
+      window.setTimeout(check, 50);
+    };
+    check();
   });
 }
 
-async function getRecaptchaToken() {
-  const recaptcha = await waitForRecaptcha();
-  return recaptcha.execute(RECAPTCHA_SITE_KEY, { action: RECAPTCHA_ACTION });
+async function mountTurnstile(form, feedback) {
+  if (!TURNSTILE_SITE_KEY) throw new Error("La verificación de seguridad no está configurada.");
+  const turnstile = await waitForTurnstile();
+  const container = document.createElement("div");
+  container.className = "turnstile-widget";
+  container.setAttribute("aria-label", "Verificación de seguridad");
+  form.appendChild(container);
+
+  const tokenField = document.createElement("input");
+  tokenField.type = "hidden";
+  tokenField.name = "cf-turnstile-response";
+  form.appendChild(tokenField);
+
+  const widgetId = turnstile.render(container, {
+    sitekey: TURNSTILE_SITE_KEY,
+    theme: form.dataset.turnstileTheme || "auto",
+    language: "es",
+    callback(token) {
+      tokenField.value = token;
+      setFeedback(feedback, "", "");
+    },
+    "expired-callback"() {
+      tokenField.value = "";
+      setFeedback(feedback, "error", "La verificación venció. Complétala nuevamente.");
+    },
+    "error-callback"() {
+      tokenField.value = "";
+      setFeedback(feedback, "error", "No se pudo completar la verificación de seguridad.");
+    }
+  });
+
+  return { turnstile, widgetId, tokenField };
+}
+
+function resetTurnstile(widget) {
+  if (!widget) return;
+  widget.tokenField.value = "";
+  try {
+    widget.turnstile.reset(widget.widgetId);
+  } catch {
+    // A later page load will render a new widget if the provider is unavailable.
+  }
 }
 
 function initMailForms() {
@@ -59,32 +90,33 @@ function initMailForms() {
     form.dataset.mailReady = "true";
     setOrigin(form);
 
+    const feedback = form.querySelector(".form-feedback") || form.parentElement?.querySelector(":scope > .form-feedback");
+    const widgetPromise = mountTurnstile(form, feedback).catch((error) => {
+      setFeedback(feedback, "error", error?.message || ERROR_MESSAGE);
+      return null;
+    });
+
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-
-      const feedback = form.querySelector(".form-feedback");
       const button = form.querySelector('button[type="submit"], input[type="submit"]');
       setOrigin(form);
       setFeedback(feedback, "", "");
       setButtonState(button, true);
 
       try {
-        const formData = new FormData(form);
-
-        if (RECAPTCHA_ENABLED) {
-          formData.set("recaptcha_token", await getRecaptchaToken());
-          formData.set("recaptcha_action", RECAPTCHA_ACTION);
+        const widget = await widgetPromise;
+        if (!widget?.tokenField.value) {
+          throw new Error("Completa la verificación de seguridad antes de enviar.");
         }
 
+        const formData = new FormData(form);
+        formData.set("cf-turnstile-response", widget.tokenField.value);
         const response = await fetch(form.action, {
           method: "POST",
-          headers: {
-            Accept: "application/json"
-          },
+          headers: { Accept: "application/json" },
           body: formData
         });
         const result = await response.json().catch(() => ({ success: false }));
-
         if (!response.ok || result.success !== true) {
           throw new Error(result.message || ERROR_MESSAGE);
         }
@@ -96,6 +128,8 @@ function initMailForms() {
       } catch (error) {
         setFeedback(feedback, "error", error?.message || ERROR_MESSAGE);
       } finally {
+        const widget = await widgetPromise;
+        resetTurnstile(widget);
         setButtonState(button, false);
       }
     });
