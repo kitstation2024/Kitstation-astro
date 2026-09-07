@@ -29,10 +29,11 @@ const structuredDataItems = Array.isArray(structuredData)
   : structuredData
     ? [structuredData]
     : [];
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="es" data-turnstile-site-key={turnstileSiteKey}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

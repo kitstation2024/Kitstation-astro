@@ -1,6 +1,6 @@
 const SUCCESS_MESSAGE = "Tu mensaje fue enviado correctamente. Te responderemos pronto.";
 const ERROR_MESSAGE = "No se pudo enviar el formulario. Inténtalo nuevamente o escríbenos por WhatsApp.";
-const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || "";
+const TURNSTILE_SITE_KEY = document.documentElement.dataset.turnstileSiteKey || "";
 
 function setOrigin(form) {
   form.querySelectorAll('input[name="pagina_origen"], input[name="página_origen"]').forEach((origin) => {
