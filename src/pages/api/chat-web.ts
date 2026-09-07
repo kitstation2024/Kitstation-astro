@@ -72,7 +72,6 @@ function sanitizeHistory(value: unknown): ChatMessage[] {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const rate = await consumeRateLimit({ namespace: "chat", identifier: getClientIp(request), ...CHAT_LIMIT });
-    if (rate.unavailable) return jsonResponse(503, { success: false, message: rate.unavailableReason === "configuration" ? "El rate limiter persistente no está configurado." : "El rate limiter persistente no está disponible." });
     if (!rate.allowed) {
       return new Response(JSON.stringify({ success: false, message: "Demasiados mensajes. Inténtalo más tarde." }), {
         status: 429,

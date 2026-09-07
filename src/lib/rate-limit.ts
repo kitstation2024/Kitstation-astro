@@ -10,17 +10,11 @@ type RateLimitResult = {
   remaining: number;
   retryAfterSeconds: number;
   persistent: boolean;
-  unavailable?: boolean;
-  unavailableReason?: "configuration" | "provider";
 };
 
 type MemoryEntry = { count: number; expiresAt: number };
 
 const memoryStore = new Map<string, MemoryEntry>();
-
-function isProduction() {
-  return import.meta.env.PROD;
-}
 
 function keyFor({ namespace, identifier }: RateLimitOptions) {
   return `kitstation:rate-limit:${namespace}:${encodeURIComponent(identifier || "unknown")}`;
@@ -69,9 +63,6 @@ export async function consumeRateLimit(options: RateLimitOptions): Promise<RateL
   const token = getServerEnv("UPSTASH_REDIS_REST_TOKEN");
 
   if (!url || !token) {
-    if (isProduction()) {
-      return { allowed: false, remaining: 0, retryAfterSeconds: options.windowSeconds, persistent: false, unavailable: true, unavailableReason: "configuration" };
-    }
     return consumeMemory(options);
   }
 
@@ -87,7 +78,8 @@ export async function consumeRateLimit(options: RateLimitOptions): Promise<RateL
       persistent: true
     };
   } catch {
-    return { allowed: false, remaining: 0, retryAfterSeconds: options.windowSeconds, persistent: true, unavailable: true, unavailableReason: "provider" };
+    // Upstash is optional. Keep a local best-effort limit if its REST API is temporarily unavailable.
+    return consumeMemory(options);
   }
 }
 import { getServerEnv } from "./server-env";

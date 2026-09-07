@@ -61,7 +61,8 @@ async function mountTurnstile(form, feedback) {
   tokenField.name = "cf-turnstile-response";
   form.appendChild(tokenField);
 
-  const widgetId = turnstile.render(container, {
+  let widgetId;
+  widgetId = turnstile.render(container, {
     sitekey: TURNSTILE_SITE_KEY,
     theme: form.dataset.turnstileTheme || "auto",
     language: "es",
@@ -76,6 +77,13 @@ async function mountTurnstile(form, feedback) {
     "error-callback"() {
       tokenField.value = "";
       setFeedback(feedback, "error", "No se pudo completar la verificación de seguridad.");
+      window.setTimeout(() => {
+        try {
+          turnstile.reset(widgetId);
+        } catch {
+          // The user can retry after a provider-side rendering failure.
+        }
+      }, 800);
     }
   });
 

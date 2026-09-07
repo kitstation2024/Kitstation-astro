@@ -119,7 +119,6 @@ async function sendAutoReply(transporter: Transporter, entries: Map<string, stri
 async function handleSubmit(request: Request) {
   const metadata = getRequestMetadata(request);
   const rate = await consumeRateLimit({ namespace: "mail", identifier: metadata.ip, ...FORM_LIMIT });
-  if (rate.unavailable) return jsonResponse(503, { success: false, message: rate.unavailableReason === "configuration" ? "El rate limiter persistente no está configurado." : "El rate limiter persistente no está disponible." });
   if (!rate.allowed) return jsonResponse(429, { success: false, message: "Demasiados intentos. Inténtalo más tarde." }, { "Retry-After": String(rate.retryAfterSeconds) });
 
   const missingEnv = getMissingEnvVars();

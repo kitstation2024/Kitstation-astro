@@ -21,6 +21,6 @@ UPSTASH_REDIS_REST_TOKEN=tu_token_de_upstash
 
 `PUBLIC_TURNSTILE_SITE_KEY` es la única clave expuesta al navegador. `TURNSTILE_SECRET_KEY`, las credenciales SMTP y el token de Upstash son secretos de servidor: no los publiques ni les asignes prefijo `PUBLIC_`.
 
-El endpoint de formularios exige una validación satisfactoria contra Turnstile antes de crear el transporte SMTP. En Vercel Production también exige Upstash Redis REST para aplicar el máximo de 5 intentos por IP cada 10 minutos; si Upstash no está configurado o falla, el endpoint rechaza la solicitud con `503` para no depender de memoria efímera de una función serverless. El chat tiene un límite independiente de 30 mensajes por IP cada 10 minutos.
+El endpoint de formularios exige una validación satisfactoria contra Turnstile antes de crear el transporte SMTP. Upstash Redis REST es opcional: si está configurado, aplica el límite de manera persistente entre instancias Serverless. Si no está configurado o no está disponible, se usa un límite en memoria de mejor esfuerzo: 5 intentos por IP cada 10 minutos para formularios y 30 para el chat. Ese respaldo no se comparte entre instancias de Vercel y puede reiniciarse al escalar o reciclar una función. Turnstile no tiene respaldo permisivo: si su token o validación falla, el envío se bloquea.
 
 Después de guardarlas, redeploya el proyecto y prueba un formulario con un correo real. No publiques el archivo `.env` ni las credenciales en Git.
