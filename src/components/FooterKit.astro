@@ -92,7 +92,7 @@
           Déjanos tu email y nosotros nos pondremos en contacto dentro de 24H.
         </p>
         
-        <form class="relative mb-2" action="/api/enviar-formulario" method="POST" data-mail-form>
+        <form class="relative mb-2" action="/api/enviar-formulario" method="POST" data-mail-form data-turnstile-size="compact" data-turnstile-placement="after">
           <input type="hidden" name="formulario" value="Suscripción al newsletter" />
           <input type="hidden" name="pagina_origen" value="" />
           <input 

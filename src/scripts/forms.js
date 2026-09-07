@@ -66,7 +66,11 @@ async function mountTurnstile(form, feedback) {
   container.style.setProperty("text-align", "center", "important");
   container.setAttribute("aria-label", "Verificación de seguridad");
   const submitControl = form.querySelector('button[type="submit"], input[type="submit"]');
-  if (submitControl) {
+  const placeAfter = form.dataset.turnstilePlacement === "after";
+  if (placeAfter) {
+    container.style.setProperty("margin-top", "1.5rem", "important");
+    form.appendChild(container);
+  } else if (submitControl) {
     submitControl.before(container);
   } else {
     form.appendChild(container);
@@ -81,6 +85,7 @@ async function mountTurnstile(form, feedback) {
   widgetId = turnstile.render(container, {
     sitekey: TURNSTILE_SITE_KEY,
     theme: form.dataset.turnstileTheme || "auto",
+    size: form.dataset.turnstileSize || "normal",
     language: "es",
     callback(token) {
       tokenField.value = token;
@@ -102,7 +107,7 @@ async function mountTurnstile(form, feedback) {
       }, 800);
     }
   });
-  centerTurnstileWidget(container, submitControl);
+  if (!placeAfter) centerTurnstileWidget(container, submitControl);
 
   return { turnstile, widgetId, tokenField };
 }
