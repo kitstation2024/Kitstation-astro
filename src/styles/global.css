@@ -121,6 +121,24 @@ select {
   margin-top: 0.875rem;
 }
 
+/* Service landing forms sit on dark sections, but their data-entry fields stay white. */
+#contact-form-mail input:not([type="hidden"]):not(.form-honeypot),
+#contact-form-mail textarea,
+#contact-form-mail #provincia-trigger,
+.service-form-page__form input:not([type="hidden"]):not(.form-honeypot),
+.service-form-page__form textarea {
+  background: #ffffff !important;
+  border-color: #d1d5db !important;
+  color: #111827 !important;
+}
+
+#contact-form-mail input:not([type="hidden"]):not(.form-honeypot)::placeholder,
+#contact-form-mail textarea::placeholder,
+.service-form-page__form input:not([type="hidden"]):not(.form-honeypot)::placeholder,
+.service-form-page__form textarea::placeholder {
+  color: #6b7280 !important;
+}
+
 .cookie-banner {
   position: fixed;
   left: 0;
