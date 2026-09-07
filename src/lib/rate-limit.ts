@@ -11,16 +11,12 @@ type RateLimitResult = {
   retryAfterSeconds: number;
   persistent: boolean;
   unavailable?: boolean;
+  unavailableReason?: "configuration" | "provider";
 };
 
 type MemoryEntry = { count: number; expiresAt: number };
 
 const memoryStore = new Map<string, MemoryEntry>();
-
-function getEnv(name: string) {
-  const value = import.meta.env[name];
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function isProduction() {
   return import.meta.env.PROD;
@@ -31,8 +27,8 @@ function keyFor({ namespace, identifier }: RateLimitOptions) {
 }
 
 async function upstashCommand(command: Array<string | number>) {
-  const url = getEnv("UPSTASH_REDIS_REST_URL");
-  const token = getEnv("UPSTASH_REDIS_REST_TOKEN");
+  const url = getServerEnv("UPSTASH_REDIS_REST_URL");
+  const token = getServerEnv("UPSTASH_REDIS_REST_TOKEN");
   if (!url || !token) return null;
 
   const response = await fetch(url, {
@@ -69,12 +65,12 @@ function consumeMemory(options: RateLimitOptions): RateLimitResult {
 }
 
 export async function consumeRateLimit(options: RateLimitOptions): Promise<RateLimitResult> {
-  const url = getEnv("UPSTASH_REDIS_REST_URL");
-  const token = getEnv("UPSTASH_REDIS_REST_TOKEN");
+  const url = getServerEnv("UPSTASH_REDIS_REST_URL");
+  const token = getServerEnv("UPSTASH_REDIS_REST_TOKEN");
 
   if (!url || !token) {
     if (isProduction()) {
-      return { allowed: false, remaining: 0, retryAfterSeconds: options.windowSeconds, persistent: false, unavailable: true };
+      return { allowed: false, remaining: 0, retryAfterSeconds: options.windowSeconds, persistent: false, unavailable: true, unavailableReason: "configuration" };
     }
     return consumeMemory(options);
   }
@@ -91,6 +87,7 @@ export async function consumeRateLimit(options: RateLimitOptions): Promise<RateL
       persistent: true
     };
   } catch {
-    return { allowed: false, remaining: 0, retryAfterSeconds: options.windowSeconds, persistent: true, unavailable: true };
+    return { allowed: false, remaining: 0, retryAfterSeconds: options.windowSeconds, persistent: true, unavailable: true, unavailableReason: "provider" };
   }
 }
+import { getServerEnv } from "./server-env";

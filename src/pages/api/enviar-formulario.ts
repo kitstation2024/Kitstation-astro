@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import type { Transporter } from "nodemailer";
 import { consumeRateLimit } from "../../lib/rate-limit";
+import { getServerEnv } from "../../lib/server-env";
 
 export const prerender = false;
 
@@ -35,18 +36,13 @@ function cleanValue(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function getEnv(name: string) {
-  const value = import.meta.env[name];
-  return typeof value === "string" ? value.trim() : "";
-}
-
 function getRecipients() {
-  return getEnv("MAIL_TO").split(",").map((item) => item.trim()).filter(Boolean);
+  return getServerEnv("MAIL_TO").split(",").map((item) => item.trim()).filter(Boolean);
 }
 
 function getMissingEnvVars() {
   const required = ["SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS", "MAIL_FROM", "TURNSTILE_SECRET_KEY"];
-  return required.filter((name) => !getEnv(name));
+  return required.filter((name) => !getServerEnv(name));
 }
 
 function getClientIp(request: Request) {
@@ -61,14 +57,14 @@ function getRequestMetadata(request: Request) {
 function isAllowedHostname(hostname: unknown) {
   if (typeof hostname !== "string") return false;
   if (ALLOWED_HOSTNAMES.has(hostname)) return true;
-  const isLocalDevelopment = getEnv("VERCEL_ENV") !== "production" && getEnv("NODE_ENV") !== "production";
+  const isLocalDevelopment = getServerEnv("VERCEL_ENV") !== "production" && getServerEnv("NODE_ENV") !== "production";
   if (isLocalDevelopment && LOCAL_HOSTNAMES.has(hostname)) return true;
   return false;
 }
 
 async function verifyTurnstile(token: string, ip: string) {
   if (!token || token.length > 2048) return false;
-  const body = new URLSearchParams({ secret: getEnv("TURNSTILE_SECRET_KEY"), response: token });
+  const body = new URLSearchParams({ secret: getServerEnv("TURNSTILE_SECRET_KEY"), response: token });
   if (ip !== "unknown") body.set("remoteip", ip);
 
   try {
@@ -111,19 +107,19 @@ function getSubmitterName(entries: Map<string, string>) {
 async function sendInternalMail(transporter: Transporter, entries: Map<string, string>, metadata: ReturnType<typeof getRequestMetadata>) {
   const formName = entries.get("formulario") ?? "Formulario";
   const details = [...entries.entries()].filter(([key]) => !EXCLUDED_FIELDS.has(key)).map(([key, value]) => `<tr><td style="padding:8px 12px;border:1px solid #d7deea;font-weight:700;">${htmlValue(fieldLabel(key))}</td><td style="padding:8px 12px;border:1px solid #d7deea;">${htmlValue(value || "No indicado")}</td></tr>`).join("");
-  await transporter.sendMail({ from: getEnv("MAIL_FROM"), to: getRecipients(), replyTo: entries.get("email") || entries.get("correo_electronico") || undefined, subject: `Nuevo mensaje desde Kitstation: ${formName}`, html: `<div style="font-family:Arial,Helvetica,sans-serif;color:#111827;"><h2>Nuevo envío recibido</h2><table style="border-collapse:collapse;width:100%;max-width:760px;"><tbody>${details}</tbody></table><h3 style="margin-top:24px;">Datos de la solicitud</h3><ul><li><strong>Formulario:</strong> ${htmlValue(formName)}</li><li><strong>Página de origen:</strong> ${htmlValue(entries.get("pagina_origen") || metadata.referer)}</li><li><strong>IP:</strong> ${htmlValue(metadata.ip)}</li><li><strong>User-Agent:</strong> ${htmlValue(metadata.userAgent)}</li></ul></div>` });
+  await transporter.sendMail({ from: getServerEnv("MAIL_FROM"), to: getRecipients(), replyTo: entries.get("email") || entries.get("correo_electronico") || undefined, subject: `Nuevo mensaje desde Kitstation: ${formName}`, html: `<div style="font-family:Arial,Helvetica,sans-serif;color:#111827;"><h2>Nuevo envío recibido</h2><table style="border-collapse:collapse;width:100%;max-width:760px;"><tbody>${details}</tbody></table><h3 style="margin-top:24px;">Datos de la solicitud</h3><ul><li><strong>Formulario:</strong> ${htmlValue(formName)}</li><li><strong>Página de origen:</strong> ${htmlValue(entries.get("pagina_origen") || metadata.referer)}</li><li><strong>IP:</strong> ${htmlValue(metadata.ip)}</li><li><strong>User-Agent:</strong> ${htmlValue(metadata.userAgent)}</li></ul></div>` });
 }
 
 async function sendAutoReply(transporter: Transporter, entries: Map<string, string>) {
   const recipient = entries.get("email") || entries.get("correo_electronico");
   if (!recipient) return;
-  await transporter.sendMail({ from: getEnv("MAIL_FROM"), to: recipient, subject: "Gracias por escribirnos | Kitstation", html: `<div style="font-family:Arial,Helvetica,sans-serif;color:#111827;"><p>Hola ${htmlValue(getSubmitterName(entries))},</p><p>Gracias por escribirnos. Recibimos tu mensaje correctamente y nos pondremos en contacto contigo a la brevedad.</p><p>Equipo Kitstation</p></div>` });
+  await transporter.sendMail({ from: getServerEnv("MAIL_FROM"), to: recipient, subject: "Gracias por escribirnos | Kitstation", html: `<div style="font-family:Arial,Helvetica,sans-serif;color:#111827;"><p>Hola ${htmlValue(getSubmitterName(entries))},</p><p>Gracias por escribirnos. Recibimos tu mensaje correctamente y nos pondremos en contacto contigo a la brevedad.</p><p>Equipo Kitstation</p></div>` });
 }
 
 async function handleSubmit(request: Request) {
   const metadata = getRequestMetadata(request);
   const rate = await consumeRateLimit({ namespace: "mail", identifier: metadata.ip, ...FORM_LIMIT });
-  if (rate.unavailable) return jsonResponse(503, { success: false, message: "El servicio de seguridad no está disponible." });
+  if (rate.unavailable) return jsonResponse(503, { success: false, message: rate.unavailableReason === "configuration" ? "El rate limiter persistente no está configurado." : "El rate limiter persistente no está disponible." });
   if (!rate.allowed) return jsonResponse(429, { success: false, message: "Demasiados intentos. Inténtalo más tarde." }, { "Retry-After": String(rate.retryAfterSeconds) });
 
   const missingEnv = getMissingEnvVars();
@@ -148,7 +144,7 @@ async function handleSubmit(request: Request) {
 
   const nodemailerModule = await import("nodemailer");
   const nodemailer = nodemailerModule.default ?? nodemailerModule;
-  const transporter = nodemailer.createTransport({ host: getEnv("SMTP_HOST"), port: Number(getEnv("SMTP_PORT")), secure: Number(getEnv("SMTP_PORT")) === 465, auth: { user: getEnv("SMTP_USER"), pass: getEnv("SMTP_PASS") } });
+  const transporter = nodemailer.createTransport({ host: getServerEnv("SMTP_HOST"), port: Number(getServerEnv("SMTP_PORT")), secure: Number(getServerEnv("SMTP_PORT")) === 465, auth: { user: getServerEnv("SMTP_USER"), pass: getServerEnv("SMTP_PASS") } });
   await sendInternalMail(transporter, entries, metadata);
   await sendAutoReply(transporter, entries);
   return jsonResponse(200, { success: true, message: "Mensaje enviado correctamente." });
