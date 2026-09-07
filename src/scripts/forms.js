@@ -38,6 +38,22 @@ function waitForTurnstile() {
   });
 }
 
+function centerTurnstileWidget(container, submitControl) {
+  const upperField = container.previousElementSibling || submitControl.parentElement?.previousElementSibling;
+  if (!upperField || !submitControl) return;
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      const upperRect = upperField.getBoundingClientRect();
+      const widgetRect = container.getBoundingClientRect();
+      const buttonRect = submitControl.getBoundingClientRect();
+      const targetCenter = (upperRect.bottom + buttonRect.top) / 2;
+      const offset = Math.round(targetCenter - (widgetRect.top + widgetRect.height / 2));
+      container.style.setProperty("transform", `translateY(${offset}px)`, "important");
+    });
+  });
+}
+
 async function mountTurnstile(form, feedback) {
   if (!TURNSTILE_SITE_KEY) throw new Error("La verificación de seguridad no está configurada.");
   const turnstile = await waitForTurnstile();
@@ -48,7 +64,6 @@ async function mountTurnstile(form, feedback) {
   container.style.setProperty("justify-content", "center", "important");
   container.style.setProperty("align-items", "center", "important");
   container.style.setProperty("text-align", "center", "important");
-  container.style.setProperty("transform", "translateY(-12px)", "important");
   container.setAttribute("aria-label", "Verificación de seguridad");
   const submitControl = form.querySelector('button[type="submit"], input[type="submit"]');
   if (submitControl) {
@@ -87,6 +102,7 @@ async function mountTurnstile(form, feedback) {
       }, 800);
     }
   });
+  centerTurnstileWidget(container, submitControl);
 
   return { turnstile, widgetId, tokenField };
 }
