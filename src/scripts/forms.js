@@ -43,6 +43,11 @@ async function mountTurnstile(form, feedback) {
   const turnstile = await waitForTurnstile();
   const container = document.createElement("div");
   container.className = "turnstile-widget";
+  container.style.setProperty("width", "100%", "important");
+  container.style.setProperty("display", "flex", "important");
+  container.style.setProperty("justify-content", "center", "important");
+  container.style.setProperty("align-items", "center", "important");
+  container.style.setProperty("text-align", "center", "important");
   container.setAttribute("aria-label", "Verificación de seguridad");
   const submitControl = form.querySelector('button[type="submit"], input[type="submit"]');
   if (submitControl) {
