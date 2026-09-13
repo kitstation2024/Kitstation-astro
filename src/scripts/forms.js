@@ -64,6 +64,7 @@ async function mountTurnstile(form, feedback) {
   container.style.setProperty("justify-content", "center", "important");
   container.style.setProperty("align-items", "center", "important");
   container.style.setProperty("text-align", "center", "important");
+  container.setAttribute("role", "group");
   container.setAttribute("aria-label", "Verificación de seguridad");
   const submitControl = form.querySelector('button[type="submit"], input[type="submit"]');
   const placeAfter = form.dataset.turnstilePlacement === "after";
