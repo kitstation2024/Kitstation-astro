@@ -277,19 +277,30 @@ const isSobreKit = currentPath.startsWith('/sobre-kit');
   // Sticky header scroll behavior
   const header = document.getElementById('main-header');
   
+  let headerIsScrolled: boolean | undefined;
+  let scrollUpdatePending = false;
+
   const handleScroll = () => {
-    if (window.scrollY > 10) {
-      header?.classList.add('shadow-sm', 'bg-white/95', 'backdrop-blur-sm');
-      header?.classList.remove('bg-white');
-    } else {
-      header?.classList.remove('shadow-sm', 'bg-white/95', 'backdrop-blur-sm');
-      header?.classList.add('bg-white');
-    }
+    scrollUpdatePending = false;
+    const isScrolled = window.scrollY > 10;
+    if (isScrolled === headerIsScrolled) return;
+
+    headerIsScrolled = isScrolled;
+    header?.classList.toggle('shadow-sm', isScrolled);
+    header?.classList.toggle('bg-white/95', isScrolled);
+    header?.classList.toggle('backdrop-blur-sm', isScrolled);
+    header?.classList.toggle('bg-white', !isScrolled);
   };
 
-  window.addEventListener('scroll', handleScroll);
-  // Initial check
-  handleScroll();
+  const scheduleHeaderUpdate = () => {
+    if (scrollUpdatePending) return;
+    scrollUpdatePending = true;
+    window.requestAnimationFrame(handleScroll);
+  };
+
+  window.addEventListener('scroll', scheduleHeaderUpdate, { passive: true });
+  // Initial check, deferred to avoid competing with the first paint.
+  scheduleHeaderUpdate();
 
   // Mobile menu toggle
   const mobileToggle = document.getElementById('mobile-menu-toggle');
