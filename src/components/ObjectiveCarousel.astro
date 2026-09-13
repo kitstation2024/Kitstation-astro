@@ -423,13 +423,6 @@
       return jumpDistance;
     };
 
-    // Initialize scroll position to the middle clone so we can swipe right infinitely from the start
-    setTimeout(() => {
-      if (track.scrollLeft < getJumpDistance() * 2) {
-        track.scrollLeft = getJumpDistance() * 2;
-      }
-    }, 100);
-
     // Custom Scrollbar Logic
     const scrollThumb = document.getElementById('custom-scrollbar-thumb');
     const scrollTrack = document.getElementById('custom-scrollbar-track');
@@ -517,7 +510,7 @@
 
     const autoScroll = () => {
       // Determine target speed based on user interaction
-      const normalSpeed = window.innerWidth < 768 ? 0.5 : 0.8;
+      const normalSpeed = mobileQuery.matches ? 0.5 : 0.8;
       
       if (isNativeScrolling || isPermanentlyPaused) {
         targetVelocity = 0;
@@ -547,6 +540,16 @@
       requestAnimationFrame(autoScroll);
     };
 
-    requestAnimationFrame(autoScroll);
+    const startCarousel = () => {
+      // Set the known initial position without first querying layout-dependent scroll data.
+      track.scrollLeft = getJumpDistance() * 2;
+      requestAnimationFrame(autoScroll);
+    };
+
+    if (document.readyState === 'complete') {
+      startCarousel();
+    } else {
+      window.addEventListener('load', startCarousel, { once: true });
+    }
   }
 </script>
