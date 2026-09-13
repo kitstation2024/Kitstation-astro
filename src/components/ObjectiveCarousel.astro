@@ -252,6 +252,18 @@
       originalCards.forEach(card => track.appendChild(card.cloneNode(true)));
     }
 
+    const cardGap = 24;
+    const mobileQuery = window.matchMedia('(max-width: 767px)');
+    let cardWidth = mobileQuery.matches ? 280 : 320;
+    let jumpDistance = originalCards.length * (cardWidth + cardGap);
+
+    const updateCarouselMetrics = () => {
+      cardWidth = mobileQuery.matches ? 280 : 320;
+      jumpDistance = originalCards.length * (cardWidth + cardGap);
+    };
+
+    mobileQuery.addEventListener('change', updateCarouselMetrics);
+
     let isHovered = false;
     let isNativeScrolling = false;
 
@@ -281,27 +293,17 @@
     }, { passive: true });
 
     const getNearestCardScrollLeft = (direction: number) => {
-      const cards = Array.from(track.children) as HTMLElement[];
+      const cardCount = track.children.length;
       const trackCenter = track.scrollLeft + track.clientWidth / 2;
-      
-      let minDiff = Infinity;
-      let nearestIndex = 0;
-      
-      cards.forEach((card, i) => {
-        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-        const diff = Math.abs(cardCenter - trackCenter);
-        if (diff < minDiff) {
-          minDiff = diff;
-          nearestIndex = i;
-        }
-      });
+      const firstCardCenter = mobileQuery.matches ? track.clientWidth / 2 : 48 + cardWidth / 2;
+      const cardStep = cardWidth + cardGap;
+      const nearestIndex = Math.round((trackCenter - firstCardCenter) / cardStep);
 
       let targetIndex = nearestIndex + direction;
       if (targetIndex < 0) targetIndex = 0;
-      if (targetIndex >= cards.length) targetIndex = cards.length - 1;
+      if (targetIndex >= cardCount) targetIndex = cardCount - 1;
 
-      const targetCard = cards[targetIndex];
-      return targetCard.offsetLeft - track.clientWidth / 2 + targetCard.offsetWidth / 2;
+      return firstCardCenter + targetIndex * cardStep - track.clientWidth / 2;
     };
 
     const centerTrackIfNeeded = () => {
@@ -415,13 +417,10 @@
     track.addEventListener('touchstart', () => { isNativeScrolling = true; currentVelocity = 0; isPermanentlyPaused = true; }, { passive: true });
     track.addEventListener('touchend', () => { setTimeout(() => isNativeScrolling = false, 100); });
 
-    // Calculate exact jump distance using element offsets
-    // This perfectly accounts for gaps, margins, and paddings.
+    // The card widths and gap are fixed by the component's responsive classes.
+    // Keeping this metric cached avoids forcing layout on every animation frame.
     const getJumpDistance = () => {
-      if (track.children.length <= originalCards.length) return 1;
-      const firstOriginal = track.children[0] as HTMLElement;
-      const firstClone = track.children[originalCards.length] as HTMLElement;
-      return firstClone.offsetLeft - firstOriginal.offsetLeft;
+      return jumpDistance;
     };
 
     // Initialize scroll position to the middle clone so we can swipe right infinitely from the start
@@ -436,6 +435,8 @@
     const scrollTrack = document.getElementById('custom-scrollbar-track');
 
     if (scrollThumb && scrollTrack) {
+      let scrollbarMaxTranslate = 0;
+
       const updateThumbPosition = () => {
         if (scrollThumb && scrollTrack) {
           const jump = getJumpDistance();
@@ -452,8 +453,7 @@
              if (progress < 0) progress = 0;
              if (progress > 1) progress = 1;
              
-             const maxTx = scrollTrack.clientWidth - scrollThumb.clientWidth;
-             scrollThumb.style.transform = `translateX(${progress * maxTx}px)`;
+             scrollThumb.style.transform = `translateX(${progress * scrollbarMaxTranslate}px)`;
           }
         }
       };
@@ -461,7 +461,8 @@
       const onThumbMouseMove = (e: MouseEvent) => {
         if (!isDraggingThumb) return;
         const dx = e.clientX - dragStartX;
-        const maxTx = scrollTrack.clientWidth - scrollThumb.clientWidth;
+        const maxTx = scrollbarMaxTranslate;
+        if (maxTx <= 0) return;
         const jump = getJumpDistance();
         
         let deltaProgress = dx / maxTx;
@@ -499,8 +500,15 @@
         window.addEventListener('mousemove', onThumbMouseMove);
         window.addEventListener('mouseup', onThumbMouseUp);
       });
+
+      const scrollbarObserver = new ResizeObserver(([entry]) => {
+        // The thumb is 25% of the track, so its available travel is 75%.
+        scrollbarMaxTranslate = entry.contentRect.width * 0.75;
+        updateThumbPosition();
+      });
+      scrollbarObserver.observe(scrollTrack);
       
-      track.addEventListener('scroll', updateThumbPosition);
+      track.addEventListener('scroll', updateThumbPosition, { passive: true });
     }
 
     // 3. Auto Scroll Animation with Smooth Velocity (Lerp)
@@ -520,18 +528,20 @@
       // Smoothly transition current velocity towards target 
       currentVelocity += (targetVelocity - currentVelocity) * 0.35;
 
-      if (!isNativeScrolling && currentVelocity > 0.01) {
-        track.scrollLeft += currentVelocity;
-      }
-      
-      // Native and auto-scroll wrap around logic buffered comfortably inside the clones
       const jumpDist = getJumpDistance();
-      if (jumpDist > 0 && !isDraggingThumb && !isDraggingTrack && !isNativeScrolling) {
-        if (track.scrollLeft > jumpDist * 3) {
-          track.scrollLeft -= jumpDist;
-        } else if (track.scrollLeft < jumpDist * 1) {
-          track.scrollLeft += jumpDist;
+      if (!isNativeScrolling && currentVelocity > 0.01) {
+        let nextScroll = track.scrollLeft + currentVelocity;
+
+        // Wrap before writing, avoiding a layout read immediately after a DOM write.
+        if (jumpDist > 0 && !isDraggingThumb && !isDraggingTrack) {
+          if (nextScroll > jumpDist * 3) {
+            nextScroll -= jumpDist;
+          } else if (nextScroll < jumpDist) {
+            nextScroll += jumpDist;
+          }
         }
+
+        track.scrollLeft = nextScroll;
       }
       
       requestAnimationFrame(autoScroll);

@@ -224,17 +224,19 @@
     }, delay);
   }
 
-  // Run typewriter on load
-  typeWriter(titleType, titleHtml, 30, 200, () => {
-    typeWriter(subtitleType, subtitleHtml, 20, 100, () => {
-      // Show CTA button after subtitle finishes
-      const cta = document.getElementById('hero-cta');
-      if (cta) {
-        cta.classList.remove('opacity-0');
-        cta.classList.add('animate-zoom-in');
-      }
+  // The animated copies are currently hidden because the complete text is rendered
+  // in the HTML for a faster first paint. Avoid running timers against hidden nodes.
+  if (titleType && subtitleType && !titleType.classList.contains('hidden')) {
+    typeWriter(titleType, titleHtml, 30, 200, () => {
+      typeWriter(subtitleType, subtitleHtml, 20, 100, () => {
+        const cta = document.getElementById('hero-cta');
+        if (cta) {
+          cta.classList.remove('opacity-0');
+          cta.classList.add('animate-zoom-in');
+        }
+      });
     });
-  });
+  }
 
   // Animate Galaxy Nodes from 0 to 8 while title is typing
   const animateNodes = () => {
