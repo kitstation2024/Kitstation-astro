@@ -310,7 +310,7 @@ const soluciones = [
         <div class="w-full md:w-6/12 flex-1 flex flex-col z-10 relative md:px-16">
             
             <!-- Left arrow (absolute) -->
-            <button id="slider-prev" class="hidden md:flex absolute top-1/2 left-0 -translate-y-1/2 w-8 h-8 rounded-full bg-white hover:bg-gray-200 items-center justify-center transition-colors z-20">
+            <button id="slider-prev" type="button" aria-label="Ver diapositiva anterior" class="hidden md:flex absolute top-1/2 left-0 -translate-y-1/2 w-8 h-8 rounded-full bg-white hover:bg-gray-200 items-center justify-center transition-colors z-20">
               <i class="bi bi-arrow-left text-black text-sm"></i>
             </button>
 
@@ -326,7 +326,7 @@ const soluciones = [
             </div>
 
             <!-- Right arrow (absolute) -->
-            <button id="slider-next" class="hidden md:flex absolute top-1/2 right-0 -translate-y-1/2 w-8 h-8 rounded-full bg-white hover:bg-gray-200 items-center justify-center transition-colors z-20">
+            <button id="slider-next" type="button" aria-label="Ver siguiente diapositiva" class="hidden md:flex absolute top-1/2 right-0 -translate-y-1/2 w-8 h-8 rounded-full bg-white hover:bg-gray-200 items-center justify-center transition-colors z-20">
               <i class="bi bi-arrow-right text-black text-sm"></i>
             </button>
         </div>
@@ -711,6 +711,9 @@ const soluciones = [
 
         // Create dot
         const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.setAttribute('aria-label', `Ver diapositiva ${idx + 1} de ${slides.length}`);
+        dot.setAttribute('aria-current', idx === 0 ? 'true' : 'false');
         dot.className = `transition-all duration-300 ${idx === 0 ? 'bg-white w-4 h-2 rounded-full' : 'bg-white/50 w-2 h-2 rounded-full hover:bg-white/80'}`;
         dot.addEventListener('click', () => goToSlide(idx));
         sliderDots.appendChild(dot);
@@ -733,6 +736,7 @@ const soluciones = [
      
      // Update dots
      Array.from(sliderDots.children).forEach((dot, idx) => {
+        dot.setAttribute('aria-current', idx === currentSliderIndex ? 'true' : 'false');
         if (idx === currentSliderIndex) {
            dot.className = 'transition-all duration-300 bg-white shadow-md w-4 h-2 rounded-full';
         } else {
