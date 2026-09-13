@@ -320,7 +320,7 @@ const soluciones = [
                 </div>
                 
                 <!-- Dots -->
-                <div id="slider-dots" class="absolute bottom-6 left-1/2 -translate-x-1/2 flex -space-x-1 z-20">
+                <div id="slider-dots" class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
                    <!-- Dots injected via JS -->
                 </div>
             </div>
@@ -714,7 +714,7 @@ const soluciones = [
         dot.type = 'button';
         dot.setAttribute('aria-label', `Ver diapositiva ${idx + 1} de ${slides.length}`);
         dot.setAttribute('aria-current', idx === 0 ? 'true' : 'false');
-        dot.className = 'group w-6 h-6 shrink-0 flex items-center justify-center rounded-full transition-colors';
+        dot.className = 'group w-12 h-12 shrink-0 flex items-center justify-center rounded-full transition-colors';
         const indicator = document.createElement('span');
         indicator.setAttribute('aria-hidden', 'true');
         indicator.className = `block transition-all duration-300 ${idx === 0 ? 'bg-white shadow-md w-4 h-2 rounded-full' : 'bg-white/50 shadow-sm w-2 h-2 rounded-full group-hover:bg-white/80'}`;
