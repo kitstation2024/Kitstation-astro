@@ -1,0 +1,280 @@
+---
+const whatsappMessage = encodeURIComponent("Hola, quiero información sobre los servicios de KitStation.");
+
+const channels = [
+  {
+    name: "Correo",
+    href: "mailto:contacto@kitstation.pe",
+    color: "#55ace3",
+    icon: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.75 5.5h16.5A1.75 1.75 0 0 1 22 7.25v9.5a1.75 1.75 0 0 1-1.75 1.75H3.75A1.75 1.75 0 0 1 2 16.75v-9.5A1.75 1.75 0 0 1 3.75 5.5Zm-.05 2 7.24 5.43c.63.47 1.49.47 2.12 0L20.3 7.5H3.7Z"/></svg>`
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/kitstationpe/",
+    color: "linear-gradient(135deg, #833ab4 0%, #fd1d1d 55%, #fcb045 100%)",
+    icon: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm-.18 2A3.02 3.02 0 0 0 4 7.02v9.96A3.02 3.02 0 0 0 7.02 20h9.96A3.02 3.02 0 0 0 20 16.98V7.02A3.02 3.02 0 0 0 16.98 4H7.02ZM12 7.14A4.86 4.86 0 1 1 12 16.86 4.86 4.86 0 0 1 12 7.14Zm0 2A2.86 2.86 0 1 0 12 14.86 2.86 2.86 0 0 0 12 9.14ZM17.1 5.6a1.16 1.16 0 1 1 0 2.32 1.16 1.16 0 0 1 0-2.32Z"/></svg>`
+  },
+  {
+    name: "WhatsApp",
+    href: `https://wa.me/51901637020?text=${whatsappMessage}`,
+    color: "#25d366",
+    icon: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2a9.84 9.84 0 0 0-8.4 14.94L2.2 22l5.19-1.36A9.92 9.92 0 1 0 12.04 2Zm0 17.98a8.13 8.13 0 0 1-4.14-1.13l-.3-.18-3.08.81.82-3-.2-.31a8.15 8.15 0 1 1 6.9 3.81Zm4.47-6.1c-.25-.12-1.45-.72-1.68-.8-.22-.09-.38-.13-.55.12-.16.25-.63.8-.78.97-.14.16-.28.18-.52.06-.25-.12-1.04-.38-1.98-1.22a7.5 7.5 0 0 1-1.37-1.7c-.14-.25-.02-.38.11-.5.11-.11.24-.28.36-.43.12-.14.16-.24.25-.4.08-.17.04-.31-.02-.43-.06-.13-.55-1.33-.75-1.82-.2-.47-.4-.41-.55-.42h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.04 0 1.21.88 2.37 1 2.54.12.16 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.51.59.19 1.12.16 1.54.1.47-.07 1.45-.6 1.66-1.17.2-.58.2-1.07.14-1.17-.06-.1-.22-.16-.47-.29Z"/></svg>`
+  },
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61564378176610",
+    color: "#1877f2",
+    icon: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.6 22v-9h3.03l.45-3.52H13.6V7.23c0-1.02.28-1.71 1.74-1.71h1.86V2.37c-.32-.04-1.43-.14-2.72-.14-2.69 0-4.53 1.64-4.53 4.66v2.59H6.91V13h3.04v9h3.65Z"/></svg>`
+  },
+  {
+    name: "LinkedIn",
+    href: "https://www.linkedin.com/company/kitstation",
+    color: "#0a66c2",
+    icon: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 8.25H3V21h3.5V8.25ZM4.75 3A2.04 2.04 0 1 0 4.75 7.08 2.04 2.04 0 0 0 4.75 3ZM21 13.69c0-3.84-2.05-5.63-4.79-5.63a4.14 4.14 0 0 0-3.73 2.05h-.05V8.25H9.08V21h3.5v-6.31c0-1.66.31-3.27 2.37-3.27 2.03 0 2.05 1.9 2.05 3.38V21h3.5l.5-7.31Z"/></svg>`
+  }
+];
+---
+
+<div class="contact-launcher" data-contact-launcher>
+  <div class="contact-launcher__channels" id="contact-launcher-channels" aria-hidden="true">
+    {channels.map((channel, index) => (
+      <a
+        class="contact-launcher__channel"
+        href={channel.href}
+        target={channel.href.startsWith("mailto:") ? undefined : "_blank"}
+        rel={channel.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+        aria-label={`Contactar por ${channel.name}`}
+        title={channel.name}
+        style={`--channel-index:${index};--channel-color:${channel.color}`}
+      >
+        <span class="contact-launcher__label" aria-hidden="true">{channel.name}</span>
+        <span class="contact-launcher__icon" set:html={channel.icon}></span>
+      </a>
+    ))}
+  </div>
+
+  <button
+    class="contact-launcher__toggle"
+    type="button"
+    aria-label="Abrir canales de contacto"
+    aria-expanded="false"
+    aria-controls="contact-launcher-channels"
+    data-contact-launcher-toggle
+  >
+    <svg class="contact-launcher__toggle-chat" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+      <path d="M6.2 5.5h11.6a3.2 3.2 0 0 1 3.2 3.2v7.1a3.2 3.2 0 0 1-3.2 3.2h-4.1l-4.4 3.4V19H6.2A3.2 3.2 0 0 1 3 15.8V8.7a3.2 3.2 0 0 1 3.2-3.2Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/>
+      <path d="M9.3 2.8h11.5A3.2 3.2 0 0 1 24 6v7.2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+    </svg>
+    <svg class="contact-launcher__toggle-close" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .contact-launcher {
+    position: fixed;
+    right: 24px;
+    bottom: 22px;
+    z-index: 9998;
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+  }
+
+  .contact-launcher__channels {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 11px;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(14px);
+    transition: opacity 180ms ease, transform 220ms ease, visibility 220ms;
+  }
+
+  .contact-launcher.is-open .contact-launcher__channels {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .contact-launcher__channel,
+  .contact-launcher__toggle {
+    width: 56px;
+    height: 56px;
+    border: 0;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
+    cursor: pointer;
+  }
+
+  .contact-launcher__channel {
+    position: relative;
+    background: var(--channel-color);
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(9px) scale(0.86);
+    transition: opacity 180ms ease, transform 220ms cubic-bezier(.2,.8,.2,1), filter 160ms ease;
+    transition-delay: calc((4 - var(--channel-index)) * 24ms);
+  }
+
+  .contact-launcher.is-open .contact-launcher__channel {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition-delay: calc(var(--channel-index) * 34ms);
+  }
+
+  .contact-launcher__channel:hover,
+  .contact-launcher__channel:focus-visible {
+    filter: brightness(1.08);
+    transform: translateY(-2px) scale(1.04);
+  }
+
+  .contact-launcher__icon,
+  .contact-launcher__icon :global(svg) {
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+
+  .contact-launcher__icon :global(svg) {
+    fill: currentColor;
+  }
+
+  .contact-launcher__label {
+    position: absolute;
+    right: calc(100% + 10px);
+    top: 50%;
+    padding: 5px 9px;
+    border-radius: 7px;
+    background: rgba(15, 23, 42, 0.94);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(5px, -50%);
+    pointer-events: none;
+    transition: opacity 150ms ease, transform 150ms ease;
+  }
+
+  .contact-launcher__channel:hover .contact-launcher__label,
+  .contact-launcher__channel:focus-visible .contact-launcher__label {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+
+  .contact-launcher__toggle {
+    position: relative;
+    width: 62px;
+    height: 62px;
+    background: #3978ff;
+    transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+  }
+
+  .contact-launcher__toggle:hover,
+  .contact-launcher__toggle:focus-visible {
+    background: #2868ef;
+    transform: scale(1.04);
+    box-shadow: 0 14px 32px rgba(37, 99, 235, 0.38);
+  }
+
+  .contact-launcher__toggle svg {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    transition: opacity 180ms ease, transform 220ms ease;
+  }
+
+  .contact-launcher__toggle-close {
+    opacity: 0;
+    transform: rotate(-45deg) scale(0.75);
+  }
+
+  .contact-launcher.is-open .contact-launcher__toggle-chat {
+    opacity: 0;
+    transform: rotate(45deg) scale(0.75);
+  }
+
+  .contact-launcher.is-open .contact-launcher__toggle-close {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+
+  @media (max-width: 640px) {
+    .contact-launcher {
+      right: 16px;
+      bottom: calc(14px + env(safe-area-inset-bottom));
+      gap: 10px;
+    }
+
+    .contact-launcher__channels {
+      gap: 9px;
+    }
+
+    .contact-launcher__channel {
+      width: 52px;
+      height: 52px;
+    }
+
+    .contact-launcher__toggle {
+      width: 58px;
+      height: 58px;
+    }
+
+    .contact-launcher__label {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-launcher__channels,
+    .contact-launcher__channel,
+    .contact-launcher__toggle,
+    .contact-launcher__toggle svg {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('[data-contact-launcher]').forEach((launcher) => {
+    const toggle = launcher.querySelector('[data-contact-launcher-toggle]');
+    const channels = launcher.querySelector('.contact-launcher__channels');
+    if (!(toggle instanceof HTMLButtonElement) || !(channels instanceof HTMLElement)) return;
+
+    const setOpen = (open: boolean) => {
+      launcher.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Cerrar canales de contacto' : 'Abrir canales de contacto');
+      channels.setAttribute('aria-hidden', String(!open));
+    };
+
+    toggle.addEventListener('click', () => {
+      setOpen(!launcher.classList.contains('is-open'));
+    });
+
+    launcher.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    document.addEventListener('click', (event) => {
+      if (event.target instanceof Node && !launcher.contains(event.target)) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+  });
+</script>

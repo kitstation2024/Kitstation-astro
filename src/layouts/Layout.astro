@@ -8,7 +8,7 @@ interface Props {
 }
 
 import FooterKit from '../components/FooterKit.astro';
-import ChatWidget from '../components/ChatWidget.astro';
+import ContactLauncher from '../components/ContactLauncher.astro';
 import formsScript from '../scripts/forms.js?url';
 
 const { 
@@ -61,7 +61,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 			<slot />
 		</main>
 		{!hideFooter && <FooterKit />}
-		{!hideChat && <ChatWidget />}
+		{!hideChat && <ContactLauncher />}
 		<script type="module" src={formsScript}></script>
 	</body>
 </html>
