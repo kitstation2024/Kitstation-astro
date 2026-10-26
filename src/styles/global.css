@@ -2580,7 +2580,7 @@ select {
   position: relative;
   width: 70px;
   height: 70px;
-  background: #352cff;
+  background: #3978ff;
 }
 
 .live-linkstation-widget__button-icon {
@@ -2609,11 +2609,11 @@ select {
 }
 
 .live-linkstation-widget__powered {
-  color: rgba(255, 255, 255, 0.72);
+  color: #9ca3af;
   font-size: 0.68rem;
   font-weight: 500;
   line-height: 1;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.38);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.35);
   white-space: nowrap;
 }
 

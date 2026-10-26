@@ -69,6 +69,7 @@ const channels = [
       <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
     </svg>
   </button>
+  <span class="contact-launcher__caption" aria-hidden="true">Linkstation</span>
 </div>
 
 <style>
@@ -79,7 +80,16 @@ const channels = [
     z-index: 9998;
     display: grid;
     justify-items: center;
-    gap: 12px;
+    gap: 7px;
+  }
+
+  .contact-launcher__caption {
+    color: #9ca3af;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.35);
   }
 
   .contact-launcher__channels {
@@ -213,7 +223,7 @@ const channels = [
     .contact-launcher {
       right: 16px;
       bottom: calc(14px + env(safe-area-inset-bottom));
-      gap: 10px;
+      gap: 7px;
     }
 
     .contact-launcher__channels {
