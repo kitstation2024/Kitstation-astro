@@ -9,6 +9,7 @@ type Project = {
   media: string | null;
   poster?: string;
   type: string;
+  tags: string[];
   startTime?: number;
   isWide?: boolean;
   url?: string;
@@ -19,7 +20,6 @@ type Service = {
   name: string;
   formattedName: string;
   colorClass: string;
-  textColor: string;
   rgb: string;
   circleImage: string;
   projects: Project[];
@@ -27,40 +27,40 @@ type Service = {
 
 const services: Service[] = [
   { 
-    id: 'web', name: 'Diseño y desarrollo web', formattedName: 'Diseño y<br />desarrollo web', colorClass: 'bg-[#c4a3f8]', textColor: 'text-[#c4a3f8]', rgb: '196, 163, 248', 
+    id: 'web', name: 'Diseño y desarrollo web', formattedName: 'Diseño y<br />desarrollo web', colorClass: 'bg-[#c4a3f8]', rgb: '196, 163, 248',
     circleImage: '/images/projects/web/circulo-web.jpg',
     projects: [
-      { title: 'Exiven', description: 'Catálogo digital autogestionable en WordPress, optimizado para la exhibición ágil de productos.', media: '/videos/diseno-web/diseno-web-portafolio.mp4', poster: '/images/projects/web/1-Web-Exiven.jpg', type: 'video', url: 'https://www.exiven.com/' },
-      { title: 'Bodega Olcese', description: 'E-commerce con logística dual (entregas inmediatas o programadas) y cálculo de envío dinámico por zonas.', media: '/videos/diseno-web/diseno-web-ecomerce-2.mp4', poster: '/images/projects/web/2-Web-bodegaolcese.jpg', type: 'video', url: 'https://bodegaolcese.pe/' },
-      { title: 'Versounited', description: 'Portafolio 3D inmersivo desarrollado en Astro y Three.js, con físicas de movimiento en tiempo real.', media: '/videos/diseno-web/diseno-web-3d.mp4', poster: '/images/projects/web/3-web-versounited.jpg', type: 'video', url: 'https://versounited.com/' },
-      { title: 'Alfra', description: 'Landing page financiera orientada a la conversión, con embudo integrado para segmentación de leads.', media: '/videos/diseno-web/diseno-web-corporativas.mp4', poster: '/images/projects/web/4-web-alfra.jpg', type: 'video', url: 'https://www.contadoresalfra.pe/' },
-      { title: 'Corfrut', description: 'Catálogo corporativo bilingüe (ES/EN) estructurado para el posicionamiento de productos de exportación B2B.', media: '/videos/diseno-web/diseno-web-multilenguaje.mp4', poster: '/images/projects/web/5-web-corfrut.jpg', type: 'video', url: 'https://corfrutfresh.com/' },
-      { title: 'EvilWorld', description: 'Tienda en línea optimizada para conversiones con pasarelas de pago y gestión de inventario.', media: '/videos/diseno-web/diseno-web-ecomerce.mp4', type: 'video', url: 'https://evilworld.pe/' },
-      { title: 'Smarticket', description: 'Estructura de impacto orientada a máxima conversión, diseñada para transformar clics en ventas reales.', media: '/videos/diseno-web/diseno-web-landing.mp4', type: 'video', url: 'https://www.smarticket.pe/' }
+      { title: 'Exiven', description: 'Catálogo digital autogestionable en WordPress, optimizado para la exhibición ágil de productos.', media: '/videos/diseno-web/diseno-web-portafolio.mp4', poster: '/images/projects/web/1-Web-Exiven.jpg', type: 'video', tags: ['catálogo', 'web'], url: 'https://www.exiven.com/' },
+      { title: 'Bodega Olcese', description: 'E-commerce con logística dual (entregas inmediatas o programadas) y cálculo de envío dinámico por zonas.', media: '/videos/diseno-web/diseno-web-ecomerce-2.mp4', poster: '/images/projects/web/2-Web-bodegaolcese.jpg', type: 'video', tags: ['e-commerce', 'logística'], url: 'https://bodegaolcese.pe/' },
+      { title: 'Versounited', description: 'Portafolio 3D inmersivo desarrollado en Astro y Three.js, con físicas de movimiento en tiempo real.', media: '/videos/diseno-web/diseno-web-3d.mp4', poster: '/images/projects/web/3-web-versounited.jpg', type: 'video', tags: ['portfolio', '3D'], url: 'https://versounited.com/' },
+      { title: 'Alfra', description: 'Landing page financiera orientada a la conversión, con embudo integrado para segmentación de leads.', media: '/videos/diseno-web/diseno-web-corporativas.mp4', poster: '/images/projects/web/4-web-alfra.jpg', type: 'video', tags: ['landing page', 'finanzas'], url: 'https://www.contadoresalfra.pe/' },
+      { title: 'Corfrut', description: 'Catálogo corporativo bilingüe (ES/EN) estructurado para el posicionamiento de productos de exportación B2B.', media: '/videos/diseno-web/diseno-web-multilenguaje.mp4', poster: '/images/projects/web/5-web-corfrut.jpg', type: 'video', tags: ['web corporativa', 'B2B'], url: 'https://corfrutfresh.com/' },
+      { title: 'EvilWorld', description: 'Tienda en línea optimizada para conversiones con pasarelas de pago y gestión de inventario.', media: '/videos/diseno-web/diseno-web-ecomerce.mp4', type: 'video', tags: ['e-commerce'], url: 'https://evilworld.pe/' },
+      { title: 'Smarticket', description: 'Estructura de impacto orientada a máxima conversión, diseñada para transformar clics en ventas reales.', media: '/videos/diseno-web/diseno-web-landing.mp4', type: 'video', tags: ['landing page', 'ventas'], url: 'https://www.smarticket.pe/' }
     ]
   },
   { 
-    id: 'ia', name: 'Automatizaciones con IA', formattedName: 'Automatizaciones<br />con IA', colorClass: 'bg-[#52a0ff]', textColor: 'text-[#52a0ff]', rgb: '82, 160, 255', 
+    id: 'ia', name: 'Automatizaciones con IA', formattedName: 'Automatizaciones<br />con IA', colorClass: 'bg-[#52a0ff]', rgb: '82, 160, 255',
     circleImage: '/images/projects/ia/circulo-ia.jpg',
     projects: [] // Se muestra la interfaz del Chat
   },
   /*
   { 
-    id: 'software', name: 'Desarrollo de software', formattedName: 'Desarrollo de<br />software', colorClass: 'bg-[#187ab0]', textColor: 'text-[#187ab0]', rgb: '24, 122, 176', 
+    id: 'software', name: 'Desarrollo de software', formattedName: 'Desarrollo de<br />software', colorClass: 'bg-[#187ab0]', rgb: '24, 122, 176',
     circleImage: '/images/projects/software/circulo-software.jpg',
     projects: [
-      { title: 'Linkstation', description: 'Sistema de mensajería unificada, diseñado para centralizar y agilizar toda la comunicación en una sola plataforma.', media: '/images/projects/software/1-crm-linksation.jpg', type: 'image' }
+      { title: 'Linkstation', description: 'Sistema de mensajería unificada, diseñado para centralizar y agilizar toda la comunicación en una sola plataforma.', media: '/images/projects/software/1-crm-linksation.jpg', type: 'image', tags: ['software', 'CRM'] }
     ]
   },
   */
   { 
-    id: 'marca', name: 'Identidad de marca', formattedName: 'Identidad de<br />marca', colorClass: 'bg-[#ff9768]', textColor: 'text-[#ff9768]', rgb: '255, 151, 104', 
+    id: 'marca', name: 'Identidad de marca', formattedName: 'Identidad de<br />marca', colorClass: 'bg-[#ff9768]', rgb: '255, 151, 104',
     circleImage: '/images/projects/marca/circulo-marca.jpg',
     projects: [
-      { title: 'Animación 2D', description: 'Pieza híbrida desarrollada con la suite Adobe (After Effects, Illustrator, Photoshop), que integra elementos 3D en secuencias clave para aportar profundidad y dinamismo visual.', media: '/images/projects/marca/2-2D.mp4', type: 'video', startTime: 4.6 },
-      { title: 'Corrección de color', description: 'Etalonaje profesional en DaVinci Resolve para campaña de moda (fashion film), enfocado en potenciar la estética y consolidar la identidad visual de la marca.', media: '/images/projects/marca/3-CORRECCION.mp4', type: 'video', startTime: 148.26 },
-      { title: 'Efectos visuales (VFX)', description: 'Integración de efectos digitales para una campaña estacional de Halloween (Ignacio Baladán), orientada a maximizar el engagement y la retención en redes sociales.', media: '/images/projects/marca/4-EFECTOS-V.mp4', type: 'video' },
-      { title: 'Animación 3D', description: 'Producción y secuenciación visual (Blender, Cinema 4D, Premiere Pro) ejecutada por Kitstation, transformando el guion original del cliente en una pieza inmersiva de alto impacto.', media: '/images/projects/marca/1-3D.mp4', type: 'video', isWide: true }
+      { title: 'Animación 2D', description: 'Pieza híbrida desarrollada con la suite Adobe (After Effects, Illustrator, Photoshop), que integra elementos 3D en secuencias clave para aportar profundidad y dinamismo visual.', media: '/images/projects/marca/2-2D.mp4', type: 'video', tags: ['animación', '2D'], startTime: 4.6 },
+      { title: 'Corrección de color', description: 'Etalonaje profesional en DaVinci Resolve para campaña de moda (fashion film), enfocado en potenciar la estética y consolidar la identidad visual de la marca.', media: '/images/projects/marca/3-CORRECCION.mp4', type: 'video', tags: ['video', 'color'], startTime: 148.26 },
+      { title: 'Efectos visuales (VFX)', description: 'Integración de efectos digitales para una campaña estacional de Halloween (Ignacio Baladán), orientada a maximizar el engagement y la retención en redes sociales.', media: '/images/projects/marca/4-EFECTOS-V.mp4', type: 'video', tags: ['VFX', 'campaña'] },
+      { title: 'Animación 3D', description: 'Producción y secuenciación visual (Blender, Cinema 4D, Premiere Pro) ejecutada por Kitstation, transformando el guion original del cliente en una pieza inmersiva de alto impacto.', media: '/images/projects/marca/1-3D.mp4', type: 'video', tags: ['animación', '3D'], isWide: true }
     ]
   }
 ];
@@ -70,9 +70,8 @@ const allProjects = services.flatMap(service =>
     category: service.id,
     title: p.title,
     description: p.description || "dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod",
-    linkText: p.url ? "Visitar web" : "Ver más",
     url: p.url || "#",
-    textColor: service.textColor,
+    tags: p.tags,
     media: p.media,
     poster: p.poster,
     mediaType: p.type,
@@ -85,12 +84,7 @@ const allProjects = services.flatMap(service =>
 <Layout title="Proyectos - KitStation" bodyClass="bg-[#000000] text-white relative overflow-x-hidden min-h-screen">
   <HeaderKit />
   
-  <main id="projects-container" class="relative z-10 pt-[140px] pb-32 px-6 md:px-12 max-w-7xl mx-auto min-h-screen">
-    <!-- Background Glows (Ahora con fixed para que no se vean afectados por el cambio de altura) -->
-    <div class="interactive-orb fixed top-[5vh] left-[-5vw] w-[450px] h-[450px] rounded-full blur-[120px] pointer-events-none z-[-1]" style="background-color: rgba(196, 163, 248, 0.35); transition: background-color 0.8s ease;"></div>
-    <div class="interactive-orb fixed bottom-[10vh] right-[5vw] w-[500px] h-[500px] rounded-full blur-[150px] pointer-events-none z-[-1]" style="background-color: rgba(196, 163, 248, 0.35); transition: background-color 0.8s ease;"></div>
-    <div class="interactive-orb fixed top-[50vh] left-[25vw] w-[350px] h-[350px] rounded-full blur-[120px] pointer-events-none z-[-1]" style="background-color: rgba(196, 163, 248, 0.25); transition: background-color 0.8s ease;"></div>
-    <div class="interactive-orb fixed top-[20vh] right-[20vw] w-[400px] h-[400px] rounded-full blur-[130px] pointer-events-none z-[-1]" style="background-color: rgba(196, 163, 248, 0.30); transition: background-color 0.8s ease;"></div>
+  <main id="projects-container" class="relative z-10 pt-[140px] pb-32 px-5 sm:px-8 md:px-12 max-w-[1200px] mx-auto min-h-screen">
 
     <!-- Header Section -->
     <div class="text-center mb-12">
@@ -126,13 +120,13 @@ const allProjects = services.flatMap(service =>
     <div class="grid grid-cols-1 grid-rows-1">
       
       <!-- Projects Grid -->
-      <div id="projects-grid" class="col-start-1 row-start-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10 min-h-[500px] content-start transition-all duration-500 ease-in-out opacity-100 scale-100">
+      <div id="projects-grid" class="col-start-1 row-start-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 md:gap-x-10 gap-y-12 md:gap-y-14 min-h-[500px] content-start transition-all duration-500 ease-in-out opacity-100 scale-100">
         {allProjects.map((project) => (
           <div 
-            class={`project-card transition-all duration-500 ease-in-out bg-[#121212]/90 border border-[#222]/80 rounded-xl p-4 sm:p-5 flex flex-col gap-3 backdrop-blur-md hover:border-white/10 hover:bg-[#1a1a1a] shadow-lg transform origin-top ${project.category === 'web' ? 'opacity-100 scale-100' : 'hidden opacity-0 scale-95'} ${project.category === 'marca' && !project.isWide ? 'max-w-[320px] mx-auto' : 'w-full'}`}
+            class={`project-card group transition-all duration-500 ease-in-out flex flex-col transform origin-top ${project.category === 'web' ? 'opacity-100 scale-100' : 'hidden opacity-0 scale-95'} ${project.category === 'marca' && !project.isWide ? 'max-w-[320px] mx-auto' : 'w-full'}`}
             data-category={project.category}
           >
-            <div class={`video-container w-full ${project.category === 'marca' && !project.isWide ? 'aspect-[9/16]' : 'aspect-video'} bg-[#000] rounded-[10px] overflow-hidden relative group-hover:shadow-xl transition-all cursor-pointer`}>
+            <div class={`video-container w-full ${project.category === 'marca' && !project.isWide ? 'aspect-[9/16]' : 'aspect-[1.64]'} bg-[#111] rounded-[16px] overflow-hidden relative border border-white/20`}>
               {project.media ? (
                 project.mediaType === 'video' ? (
                   <video src={`${project.media}${project.startTime ? `#t=${project.startTime}` : ''}`} poster={project.poster} data-start-time={project.startTime} preload="metadata" loop muted playsinline class={`w-full h-full ${project.isWide ? 'object-contain' : 'object-cover'} border-0 focus:outline-none pointer-events-none`}></video>
@@ -145,32 +139,33 @@ const allProjects = services.flatMap(service =>
                   <span class="text-xs font-semibold">Próximamente</span>
                 </div>
               )}
+              {project.category === 'web' && project.url !== '#' && (
+                <a href={project.url} target="_blank" rel="noopener noreferrer" class="absolute inset-0 z-10" aria-label={`Visitar sitio web de ${project.title}`}></a>
+              )}
+              {project.category === 'marca' && (
+                <div class="absolute bottom-3 right-3 z-10 flex gap-2 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 transition-opacity">
+                  <button type="button" class="btn-play-action flex items-center gap-1.5 text-xs font-medium text-white bg-black/70 hover:bg-black/90 border border-white/30 px-3 py-2 rounded-md" aria-label={`Reproducir video de ${project.title}`}>
+                    <i class="bi bi-play-fill text-base"></i> Reproducir
+                  </button>
+                  <button type="button" class="btn-expand-action flex items-center justify-center text-white bg-black/70 hover:bg-black/90 border border-white/30 w-9 h-9 rounded-md" title="Pantalla completa" aria-label={`Ver ${project.title} en pantalla completa`}>
+                    <i class="bi bi-arrows-fullscreen"></i>
+                  </button>
+                </div>
+              )}
             </div>
             
-            <div class="flex flex-col flex-grow">
-              <h3 class="text-white font-semibold text-lg sm:text-xl mb-1.5 tracking-wide">{project.title}</h3>
-              <p class="text-[#888] text-xs sm:text-sm leading-[1.6] mb-4 flex-grow">
-                {project.description}
-              </p>
-              
-              <div class="mt-auto">
-                {project.category === 'marca' ? (
-                  <div class="flex justify-end gap-2 md:hidden">
-                    <button type="button" class={`btn-play-action flex items-center gap-2 text-sm font-semibold ${project.textColor} hover:brightness-125 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 px-4 py-2.5 rounded-lg transition-all tracking-wider z-10`}>
-                      <i class="bi bi-play-fill text-lg"></i> Reproducir
-                    </button>
-                    <button type="button" class={`btn-expand-action flex items-center justify-center text-sm font-semibold ${project.textColor} hover:brightness-125 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 w-[42px] h-[42px] rounded-lg transition-all z-10`} title="Pantalla completa">
-                      <i class="bi bi-arrows-fullscreen"></i>
-                    </button>
-                  </div>
-                ) : (
-                  <div class="flex justify-end gap-2">
-                    <a href={project.url} target={project.url !== '#' ? '_blank' : '_self'} rel="noopener noreferrer" class="text-sm font-semibold text-white bg-[#0066FF] hover:bg-[#0052CC] border border-[#0066FF] hover:border-[#0052CC] px-6 py-2.5 rounded-lg transition-all tracking-wider">
-                      {project.linkText}
-                    </a>
-                  </div>
-                )}
+            <div class="pt-3">
+              <h3 class="text-white font-normal text-xl sm:text-[23px] leading-tight tracking-tight">
+                {project.category === 'web' && project.url !== '#' ? (
+                  <a href={project.url} target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-4">{project.title}</a>
+                ) : project.title}
+              </h3>
+              <div class="flex flex-wrap gap-1.5 mt-2.5" aria-label={`Categorías de ${project.title}`}>
+                {project.tags.map((tag) => (
+                  <span class="inline-flex items-center rounded-full border border-white/55 px-2 py-0.5 text-[11px] leading-none font-normal text-white/85">{tag}</span>
+                ))}
               </div>
+              <p class="sr-only">{project.description}</p>
             </div>
           </div>
         ))}
@@ -205,7 +200,6 @@ const allProjects = services.flatMap(service =>
 
 <script>
   const circles = document.querySelectorAll('.service-circle') as NodeListOf<HTMLElement>;
-  const orbs = document.querySelectorAll('.interactive-orb') as NodeListOf<HTMLElement>;
   const projectCards = document.querySelectorAll('.project-card');
   const projectsGrid = document.getElementById('projects-grid');
   const chatSection = document.getElementById('ia-chat-section');
@@ -224,13 +218,6 @@ const allProjects = services.flatMap(service =>
         circle.style.boxShadow = `0 0 0 4px rgb(${rgb})`;
       }
       circle.closest('.group')?.classList.add('is-active');
-
-      if (rgb && orbs.length >= 4) {
-        orbs[0].style.backgroundColor = `rgba(${rgb}, 0.35)`;
-        orbs[1].style.backgroundColor = `rgba(${rgb}, 0.35)`;
-        orbs[2].style.backgroundColor = `rgba(${rgb}, 0.25)`;
-        orbs[3].style.backgroundColor = `rgba(${rgb}, 0.30)`;
-      }
 
       const category = circle.getAttribute('data-category');
       const isChatActive = chatSection && !chatSection.classList.contains('hidden');
