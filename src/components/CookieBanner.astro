@@ -1,0 +1,66 @@
+<section class="cookie-banner" data-cookie-banner aria-label="Aviso de cookies" hidden>
+  <p>
+    ¡Bienvenido a kitstation.pe! Para proporcionarte una mejor experiencia, utilizamos cookies para habilitar algunas funciones del sitio web. Las cookies nos ayudan a ver qué artículos pueden ser de mayor interés para usted; le permiten compartir fácilmente artículos en las redes sociales; nos permiten entregar contenido, trabajos y anuncios adaptados a sus intereses y ubicaciones; y proporcionar muchos otros beneficios del sitio. Para obtener más información, consulte nuestra <a href="/politicas-y-privacidad/">Política de Cookies y Política de Privacidad</a>.
+  </p>
+  <div class="cookie-banner__actions">
+    <button class="cookie-banner__link" type="button" data-cookie-config>Configuración de cookies</button>
+    <button class="cookie-banner__button" type="button" data-cookie-choice="rejected">Rechazarlas todas</button>
+    <button class="cookie-banner__button" type="button" data-cookie-choice="accepted">Aceptar todas las cookies</button>
+  </div>
+</section>
+
+<style>
+  .cookie-banner {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 70;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 28px;
+    padding: 18px 34px;
+    border: 1px solid rgba(0, 0, 0, 0.78);
+    background: #f4f4f4;
+    color: #111;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.14);
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .cookie-banner[hidden] { display: none; }
+  .cookie-banner p { max-width: 1120px; margin: 0; font-size: 0.82rem; line-height: 1.45; }
+  .cookie-banner a, .cookie-banner__link { color: #000; font-weight: 700; text-decoration: underline; }
+  .cookie-banner__actions { display: flex; align-items: center; gap: 18px; }
+  .cookie-banner__link, .cookie-banner__button { min-height: 42px; border: 0; cursor: pointer; white-space: nowrap; }
+  .cookie-banner__link { padding: 0; background: transparent; font-size: 0.86rem; }
+  .cookie-banner__button { padding: 0 22px; border-radius: 8px; background: linear-gradient(135deg, #0553f1 0%, #271ecc 100%); color: #fff; font-size: 0.86rem; font-weight: 700; }
+
+  @media (max-width: 700px) {
+    .cookie-banner { grid-template-columns: 1fr; gap: 14px; padding: 16px; }
+    .cookie-banner p { font-size: 0.78rem; }
+    .cookie-banner__actions { flex-wrap: wrap; gap: 10px; }
+    .cookie-banner__button { flex: 1 1 160px; padding: 0 14px; }
+  }
+</style>
+
+<script>
+  const banner = document.querySelector('[data-cookie-banner]');
+  if (banner instanceof HTMLElement) {
+    const storageKey = 'kitstation-cookie-consent';
+    let storedChoice: string | null = null;
+    try { storedChoice = window.localStorage.getItem(storageKey); } catch { /* Storage is optional. */ }
+    if (!storedChoice) banner.hidden = false;
+
+    const choose = (choice: string) => {
+      try { window.localStorage.setItem(storageKey, choice); } catch { /* Storage is optional. */ }
+      banner.hidden = true;
+      window.dispatchEvent(new CustomEvent('kitstation:cookie-consent', { detail: choice }));
+    };
+
+    banner.querySelectorAll<HTMLButtonElement>('[data-cookie-choice]').forEach((button) => {
+      button.addEventListener('click', () => choose(button.dataset.cookieChoice || 'configured'));
+    });
+    banner.querySelector('[data-cookie-config]')?.addEventListener('click', () => choose('configured'));
+  }
+</script>

@@ -1,6 +1,8 @@
 ---
 import revealScript from "../scripts/reveal.js?url";
 import formsScript from "../scripts/forms.js?url";
+import GoogleTag from "../components/GoogleTag.astro";
+import CookieBanner from "../components/CookieBanner.astro";
 
 interface Props {
   title?: string;
@@ -36,6 +38,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
 <html lang="es" data-turnstile-site-key={turnstileSiteKey}>
   <head>
     <meta charset="UTF-8" />
+    <GoogleTag />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
@@ -70,16 +73,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
   </head>
   <body>
     <slot />
-    <section class="cookie-banner" data-cookie-banner aria-label="Aviso de cookies" hidden>
-      <p>
-        ¡Bienvenido a kitstation.pe! Para proporcionarte una mejor experiencia, utilizamos cookies para habilitar algunas funciones del sitio web. Las cookies nos ayudan a ver qué artículos pueden ser de mayor interés para usted; le permiten compartir fácilmente artículos en las redes sociales; nos permiten entregar contenido, trabajos y anuncios adaptados a sus intereses y ubicaciones; y proporcionar muchos otros beneficios del sitio. Para obtener más información, consulte nuestra <a href="/politicas-y-privacidad/">Política de Cookies y Política de Privacidad</a>.
-      </p>
-      <div class="cookie-banner__actions">
-        <button class="cookie-banner__link" type="button" data-cookie-config>Configuración de cookies</button>
-        <button class="cookie-banner__button" type="button" data-cookie-choice="rejected">Rechazarlas todas</button>
-        <button class="cookie-banner__button" type="button" data-cookie-choice="accepted">Aceptar todas las cookies</button>
-      </div>
-    </section>
+    <CookieBanner />
     <script type="module" define:vars={{ revealScript }}>
       const loadReveal = () => {
         import(revealScript);
@@ -92,30 +86,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
           window.setTimeout(loadReveal, 120);
         }, { once: true });
       }
-    </script>
-    <script>
-      (() => {
-        const banner = document.querySelector("[data-cookie-banner]");
-        if (!banner) return;
-
-        const storageKey = "kitstation-cookie-consent";
-        const storedChoice = window.localStorage.getItem(storageKey);
-        if (storedChoice) return;
-
-        banner.hidden = false;
-
-        banner.querySelectorAll("[data-cookie-choice]").forEach((button) => {
-          button.addEventListener("click", () => {
-            window.localStorage.setItem(storageKey, button.dataset.cookieChoice || "configured");
-            banner.hidden = true;
-          });
-        });
-
-        banner.querySelector("[data-cookie-config]")?.addEventListener("click", () => {
-          window.localStorage.setItem(storageKey, "configured");
-          banner.hidden = true;
-        });
-      })();
     </script>
     <script type="module" src={formsScript}></script>
   </body>

@@ -1,0 +1,31 @@
+<script is:inline>
+  (() => {
+    const tagId = 'G-PD9WGSXKB7';
+    let loaded = false;
+
+    const loadTag = () => {
+      if (loaded) return;
+      loaded = true;
+
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', tagId);
+
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${tagId}`;
+      document.head.appendChild(script);
+    };
+
+    try {
+      if (window.localStorage.getItem('kitstation-cookie-consent') === 'accepted') loadTag();
+    } catch {
+      // Storage can be unavailable in private browsing modes.
+    }
+
+    window.addEventListener('kitstation:cookie-consent', (event) => {
+      if (event.detail === 'accepted') loadTag();
+    });
+  })();
+</script>
